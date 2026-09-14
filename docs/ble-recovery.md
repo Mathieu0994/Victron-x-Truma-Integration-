@@ -63,9 +63,17 @@ addressed at flow level, no fork.
 ## 3. Watchdog (v1.14, `Truma Poller` tab)
 
 ```
-inj_watchdog (60 s) → ble_watchdog → exec: bluetoothctl connect <panel-mac>
+inj_watchdog (60 s) → ble_watchdog → exec: (select <adapter>; connect <panel-mac>) | bluetoothctl
                                    → ble_watchdog_done → poll_guard (topic 'force') + log
 ```
+
+`<adapter>` is `TRUMA_BLE_ADAPTER` (the USB adapter's address; empty = the
+default controller, as before). The same variable steers the Truma node itself
+once `venus/patches/truma-inetx-adapter/` is applied: the stock package has no
+adapter setting and always takes the first adapter BlueZ lists (the Cerbo's
+built-in chip), so a USB adapter is ignored without that patch. Piped
+`bluetoothctl` exits 0 regardless, so `ble_watchdog_done` judges success on the
+text *Connection successful* / *already connected* only.
 
 - Fires only when reads are failing: `conn.fails ≥ 2` **or** more than
   5 min since the last good read.

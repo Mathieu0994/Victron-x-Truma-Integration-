@@ -64,7 +64,11 @@ VRM / browser   ─┘                                   │
 
 Optional: to enable the Bluetooth watchdog, set `TRUMA_MAC` to your panel's
 address (Node-RED → the *Truma Poller* tab → Properties → Environment
-variables). Without it the watchdog stays off; nothing else changes.
+variables, or `process.env.TRUMA_MAC` in `settings-user.js`). Without it the
+watchdog stays off; nothing else changes. With a USB Bluetooth adapter (e.g.
+TP-Link UB500) also set `TRUMA_BLE_ADAPTER` to that adapter's address and apply
+`venus/patches/truma-inetx-adapter/` — the stock package always takes the
+first adapter, i.e. the Cerbo's built-in chip.
 
 ## Features
 
