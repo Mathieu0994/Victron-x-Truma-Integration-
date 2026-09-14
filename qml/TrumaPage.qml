@@ -2,17 +2,17 @@
 //
 // Deployed to /data/truma/qml/ (survives Venus OS firmware updates, unlike
 // anything under /opt/victronenergy/gui-v2/). Loaded into the main swipe
-// view by the entry added to components/SwipePageModel.qml — see
-// docs/swipe-page.md and qml/SwipePageModel.snippet.qml.
+// view by qml/SwipePageModel.v3.79.qml (installed by
+// qml/install-swipe-page-on-cerbo.sh) — see docs/swipe-page.md.
 //
 // What this file does NOT do: it does not touch a single binding of
 // TrumaPageContent-v2.qml. The content page is loaded unchanged, by absolute
 // file:// path, because a relative Loader source has silently failed to
 // resolve on this project before.
 //
-// `view` (and, depending on the gui-v2 build, `iconSource` / `url`) are
-// required properties of SwipeViewPage and are supplied by the swipe model
-// through Loader.setSource(url, { ... }), not here.
+// `view`, `navButtonText`, `navButtonIcon` and `url` are required properties
+// of SwipeViewPage (names as of Venus OS v3.79) and are supplied by the swipe
+// model when it creates this page (qml/SwipePageModel.v3.79.qml), not here.
 
 import QtQuick
 import Victron.VenusOS

@@ -157,6 +157,12 @@ the Node-RED log for *AddSetting check failed*.
 
 ## 4. QML files → `/data/truma/qml/`
 
+> **v3.79 (14 Sep 2026):** §4 and §5 are done in one go by
+> `qml/install-swipe-page-on-cerbo.sh`; read `docs/swipe-page.md` §0 first.
+> The GUI service is `/service/start-gui`, not `gui-v2`. The text below is
+> kept for reference.
+
+
 ```sh
 ssh root@<venus> "mkdir -p /data/truma/qml"
 scp qml/TrumaPage.qml qml/TrumaPageContent-v2.qml root@<venus>:/data/truma/qml/

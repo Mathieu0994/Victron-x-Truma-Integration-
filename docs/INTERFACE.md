@@ -210,7 +210,15 @@ it the page shows "—" for the two temperatures and everything else works.
 
 ---
 
-## 7. Risk that could not be closed offline — VeQuickItem uid root
+## 7. VeQuickItem uid root — resolved on the Cerbo (v3.79, 14 Sep 2026)
+
+**Answer:** the `dbus/` root segment is real. With the bare service names the
+page showed "Geen verbinding met de Truma-bridge" although
+`/Settings/Truma/RoomMode GetValue` worked. `TrumaPageContent-v2.qml` now asks
+gui-v2 for the prefixed uids (`BackendConnection.serviceUidForType("settings")`
+and `serviceUidFromName("com.victronenergy.temperature.trumaroom", 0)`); the
+`/Settings/Truma/*` path names are unchanged. The original analysis follows.
+
 
 The QML binds `uid: "com.victronenergy.settings/Settings/Truma/…"`. In
 gui-v2's own pages a settings uid is normally built as

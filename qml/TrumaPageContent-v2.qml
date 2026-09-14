@@ -10,9 +10,13 @@ Item {
     LayoutMirroring.childrenInherit: true
 
     // ---- D-Bus services -------------------------------------------------
-    readonly property string settingsService: "com.victronenergy.settings"
-    readonly property string roomTempService: "com.victronenergy.temperature.trumaroom"
-    readonly property string boilerTempService: "com.victronenergy.temperature.trumaboiler"
+    // gui-v2 prefixes every uid with its backend ("dbus/" on the GX Touch), so
+    // the service uids are asked from BackendConnection instead of being
+    // written out. The /Settings/Truma/* path names below are unchanged.
+    // (Confirmed on a Cerbo GX, Venus OS v3.79: without the prefix nothing resolves.)
+    readonly property string settingsService: BackendConnection.serviceUidForType("settings")
+    readonly property string roomTempService: BackendConnection.serviceUidFromName("com.victronenergy.temperature.trumaroom", 0)
+    readonly property string boilerTempService: BackendConnection.serviceUidFromName("com.victronenergy.temperature.trumaboiler", 0)
 
     QtObject {
         id: dbus
@@ -149,12 +153,12 @@ Item {
         property bool active: false
         signal clicked()
 
-        Layout.preferredWidth: 180
-        Layout.preferredHeight: 32
-        Layout.minimumHeight: 32
-        Layout.maximumHeight: 32
+        Layout.preferredWidth: 200
+        Layout.preferredHeight: 52
+        Layout.minimumHeight: 52
+        Layout.maximumHeight: 52
         Layout.alignment: Qt.AlignHCenter
-        radius: 6
+        radius: 8
         color: active ? root.colorAccent : Theme.color_background_secondary
         border.color: Theme.color_background_disabled
         border.width: 1
@@ -171,7 +175,7 @@ Item {
             width: parent.width - 6
             text: parent.label
             color: Theme.color_font_primary
-            font.pixelSize: Theme.font_size_caption
+            font.pixelSize: Theme.font_size_body2
             font.bold: parent.active
             horizontalAlignment: Text.AlignHCenter
         }
@@ -181,16 +185,16 @@ Item {
         Layout.fillWidth: true
         horizontalAlignment: Text.AlignHCenter
         color: Theme.color_font_secondary
-        font.pixelSize: Theme.font_size_caption
+        font.pixelSize: Theme.font_size_body2
     }
 
     component TStat: Rectangle {
         property string caption: ""
         property string valueText: ""
-        Layout.preferredWidth: 180
-        Layout.preferredHeight: 28
+        Layout.preferredWidth: 200
+        Layout.preferredHeight: 36
         Layout.alignment: Qt.AlignHCenter
-        radius: 6
+        radius: 8
         color: Theme.color_background_secondary
         border.color: Theme.color_background_disabled
         border.width: 1
@@ -213,23 +217,23 @@ Item {
 
     component TSwitch: C.Switch {
         id: sw
-        implicitWidth: 48
-        implicitHeight: 28
+        implicitWidth: 68
+        implicitHeight: 38
         indicator: Rectangle {
-            implicitWidth: 48
-            implicitHeight: 28
+            implicitWidth: 68
+            implicitHeight: 38
             x: sw.leftPadding
             y: sw.topPadding + (sw.availableHeight - height) / 2
-            radius: 14
+            radius: 19
             color: sw.checked ? root.colorAccent : Theme.color_background_disabled
             border.color: Theme.color_background_disabled
             border.width: 1
             Rectangle {
-                x: sw.checked ? parent.width - width - 3 : 3
-                y: 3
-                width: 22
-                height: 22
-                radius: 11
+                x: sw.checked ? parent.width - width - 4 : 4
+                y: 4
+                width: 30
+                height: 30
+                radius: 15
                 color: Theme.color_font_primary
             }
         }
@@ -259,7 +263,7 @@ Item {
                 C.Slider {
                     id: tempSlider
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 30
+                    Layout.preferredHeight: 48
                     LayoutMirroring.enabled: false
                     from: 5
                     to: 30
@@ -272,22 +276,22 @@ Item {
                         x: tempSlider.leftPadding
                         y: tempSlider.topPadding + tempSlider.availableHeight / 2 - height / 2
                         width: tempSlider.availableWidth
-                        height: 4
-                        radius: 2
+                        height: 8
+                        radius: 4
                         color: Theme.color_background_disabled
                         Rectangle {
                             width: tempSlider.visualPosition * parent.width
                             height: parent.height
-                            radius: 2
+                            radius: 4
                             color: root.roomOn ? root.colorAccent : Theme.color_font_secondary
                         }
                     }
                     handle: Rectangle {
                         x: tempSlider.leftPadding + tempSlider.visualPosition * (tempSlider.availableWidth - width)
                         y: tempSlider.topPadding + tempSlider.availableHeight / 2 - height / 2
-                        width: 22
-                        height: 22
-                        radius: 11
+                        width: 36
+                        height: 36
+                        radius: 18
                         color: root.roomOn ? root.colorAccent : Theme.color_font_primary
                     }
                 }
@@ -310,7 +314,7 @@ Item {
                 C.Slider {
                     id: fanSlider
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 30
+                    Layout.preferredHeight: 48
                     LayoutMirroring.enabled: false
                     from: 0
                     to: 10
@@ -323,22 +327,22 @@ Item {
                         x: fanSlider.leftPadding
                         y: fanSlider.topPadding + fanSlider.availableHeight / 2 - height / 2
                         width: fanSlider.availableWidth
-                        height: 4
-                        radius: 2
+                        height: 8
+                        radius: 4
                         color: Theme.color_background_disabled
                         Rectangle {
                             width: fanSlider.visualPosition * parent.width
                             height: parent.height
-                            radius: 2
+                            radius: 4
                             color: root.fanLevel > 0 ? root.colorAccent : Theme.color_font_secondary
                         }
                     }
                     handle: Rectangle {
                         x: fanSlider.leftPadding + fanSlider.visualPosition * (fanSlider.availableWidth - width)
                         y: fanSlider.topPadding + fanSlider.availableHeight / 2 - height / 2
-                        width: 22
-                        height: 22
-                        radius: 11
+                        width: 36
+                        height: 36
+                        radius: 18
                         color: root.fanLevel > 0 ? root.colorAccent : Theme.color_font_primary
                     }
                 }

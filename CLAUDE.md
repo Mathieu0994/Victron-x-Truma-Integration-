@@ -29,8 +29,9 @@ Venus OS Large is the testbench for QML work.
 | Path | What |
 |---|---|
 | `flows/truma-venus-flows.json` | the entire Node-RED side |
-| `qml/TrumaPage.qml`, `qml/TrumaPageContent-v2.qml` | GX Touch page |
-| `qml/SwipePageModel.snippet.qml` | makes it a top-level swipe page |
+| `qml/TrumaPage.qml`, `qml/TrumaPageContent-v2.qml` | GX Touch page (confirmed on the Cerbo, 14 Sep 2026) |
+| `qml/SwipePageModel.v3.79.qml`, `qml/install-swipe-page-on-cerbo.sh` | makes it a top-level swipe page on Venus OS v3.79 (see `docs/swipe-page.md`) |
+| `venus/patches/truma-inetx-adapter/` | lets the Truma node use a USB Bluetooth adapter (prepared, not yet applied) |
 | `venus/dbus-truma-temp/` | Python service for the two temperature sensors |
 | `docs/INTERFACE.md` | **every** key, path, unit and mapping — the contract |
 | `docs/dbus-paths.md`, `docs/DEPLOY.md`, `docs/swipe-page.md`, `docs/ble-recovery.md` | reference and runbook |
@@ -74,8 +75,20 @@ Venus OS Large is the testbench for QML work.
   `grid-template-rows` (see the CSS block in each `ui-template`).
 - **A QML file on disk is not loaded** until something references it. Verify
   with `grep` before restarting the GUI.
+- **gui-v2 ignores its QML on disk** unless the `prefer :/qt/qml/…` line is
+  removed from `/opt/victronenergy/gui-v2/Victron/VenusOS/qmldir` (v3.79).
+  The install script does that; a firmware update puts it back.
+- **VeQuickItem uids need the backend prefix** (`dbus/com.victronenergy.…`).
+  The page asks `BackendConnection` for it; never hard-code a service name.
+- **Venus OS "apps"** (`/data/apps`, Settings → Integrations) cannot add a
+  swipe page on v3.79; the owner does not want that route. Don't propose it.
+- **A stuck BlueZ session in Node-RED** shows as `DBusError: Operation
+  already in progress` on every read; `svc -t /service/node-red-venus`
+  clears it, then "Reset the connection" on the Diagnostics page.
 - **Venus OS Large is BusyBox:** no `systemd`, no `ps aux`. Services via
-  `svc`; restart the GUI with `svc -t /service/gui-v2`.
+  `svc`; the GUI service is `/service/start-gui` on v3.79 (`gui-v2` on
+  older builds), Node-RED is `/service/node-red-venus`, its user dir is
+  `/data/home/nodered/.node-red`.
 - **Firmware updates overwrite the rootfs.** Custom QML lives in `/data/`;
   only the `SwipePageModel.qml` edit has to be reapplied.
 - Sliders commit on release, not per tick — the GX Touch CPU is modest.
@@ -99,8 +112,11 @@ Venus OS Large is the testbench for QML work.
 ## Open items
 
 - v1.19 dashboard layout not yet confirmed on the device.
-- GX Touch QML page not yet confirmed on real hardware (Pi testbench first).
-- `dbus-truma-temp` not yet run on a device.
+- TP-Link UB500 USB Bluetooth adapter: detected fine, but the Truma node
+  always takes the first adapter (the built-in chip). Patch and flow change
+  prepared in `venus/patches/truma-inetx-adapter/`, not yet applied or tested;
+  the stick is currently unplugged.
+- `dbus-truma-temp` still not run, so the Touch shows "—" for both temperatures.
 - Heater interlock guaranteed by construction, not hardware-validated.
 - **Fault/error codes are not implemented** — the five polled topics don't
   carry them and the right topic is unknown. Needs a raw device-data dump
