@@ -111,7 +111,8 @@ Venus OS Large is the testbench for QML work.
 
 ## Open items
 
-- v1.19 dashboard layout not yet confirmed on the device.
+- Dashboard layout: v1.19 imported and judged fine by the owner (5 Sep); not
+  every card checked on a phone yet.
 - TP-Link UB500 USB Bluetooth adapter: detected fine, but the Truma node
   always takes the first adapter (the built-in chip). Patch and flow change
   prepared in `venus/patches/truma-inetx-adapter/`, not yet applied or tested;
