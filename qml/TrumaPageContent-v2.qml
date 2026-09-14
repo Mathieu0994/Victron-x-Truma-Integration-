@@ -20,8 +20,12 @@ Item {
 
     QtObject {
         id: dbus
-        property VeQuickItem roomTemp: VeQuickItem { uid: root.roomTempService + "/Temperature" }
-        property VeQuickItem boilerTemp: VeQuickItem { uid: root.boilerTempService + "/Temperature" }
+        // The two temperatures come from the bridge's own mirror paths, which
+        // exist on every Cerbo running the flow. The optional dbus-truma-temp
+        // service (venus/dbus-truma-temp) publishes the same values as real
+        // temperature sensors for VRM; the page no longer depends on it.
+        property VeQuickItem roomTemp: VeQuickItem { uid: root.settingsService + "/Settings/Truma/RoomTemperature" }
+        property VeQuickItem boilerTemp: VeQuickItem { uid: root.settingsService + "/Settings/Truma/BoilerTemperature" }
         property VeQuickItem targetTemp: VeQuickItem { uid: root.settingsService + "/Settings/Truma/TargetTemperature" }
         property VeQuickItem fanLevel: VeQuickItem { uid: root.settingsService + "/Settings/Truma/FanLevel" }
         property VeQuickItem airMode: VeQuickItem { uid: root.settingsService + "/Settings/Truma/AirMode" }
@@ -153,11 +157,10 @@ Item {
         property bool active: false
         signal clicked()
 
-        Layout.preferredWidth: 200
+        Layout.fillWidth: true
         Layout.preferredHeight: 52
         Layout.minimumHeight: 52
         Layout.maximumHeight: 52
-        Layout.alignment: Qt.AlignHCenter
         radius: 8
         color: active ? root.colorAccent : Theme.color_background_secondary
         border.color: Theme.color_background_disabled
@@ -175,7 +178,7 @@ Item {
             width: parent.width - 6
             text: parent.label
             color: Theme.color_font_primary
-            font.pixelSize: Theme.font_size_body2
+            font.pixelSize: Theme.font_size_body1
             font.bold: parent.active
             horizontalAlignment: Text.AlignHCenter
         }
@@ -183,17 +186,17 @@ Item {
 
     component THead: Label {
         Layout.fillWidth: true
-        horizontalAlignment: Text.AlignHCenter
-        color: Theme.color_font_secondary
-        font.pixelSize: Theme.font_size_body2
+        horizontalAlignment: Text.AlignLeft
+        color: Theme.color_font_primary
+        font.pixelSize: Theme.font_size_body1
+        font.bold: true
     }
 
     component TStat: Rectangle {
         property string caption: ""
         property string valueText: ""
-        Layout.preferredWidth: 200
-        Layout.preferredHeight: 36
-        Layout.alignment: Qt.AlignHCenter
+        Layout.fillWidth: true
+        Layout.preferredHeight: 40
         radius: 8
         color: Theme.color_background_secondary
         border.color: Theme.color_background_disabled
@@ -204,12 +207,12 @@ Item {
             Label {
                 text: parent.parent.caption
                 color: Theme.color_font_secondary
-                font.pixelSize: Theme.font_size_caption
+                font.pixelSize: Theme.font_size_body2
             }
             Label {
                 text: parent.parent.valueText
                 color: Theme.color_font_primary
-                font.pixelSize: Theme.font_size_caption
+                font.pixelSize: Theme.font_size_body2
                 font.bold: true
             }
         }
@@ -360,14 +363,14 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop
-            spacing: 12
+            spacing: 24
 
             // Room Climate
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 Layout.alignment: Qt.AlignTop
-                spacing: 4
+                spacing: 6
 
                 THead { text: "Room Climate" }
 
@@ -384,7 +387,7 @@ Item {
 
                 Item { Layout.preferredHeight: 4 }
                 RowLayout {
-                    Layout.alignment: Qt.AlignHCenter
+                    Layout.alignment: Qt.AlignLeft
                     spacing: 8
                     Label {
                         text: root.roomOn ? "Aan" : "Uit"
@@ -408,7 +411,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 Layout.alignment: Qt.AlignTop
-                spacing: 4
+                spacing: 6
 
                 THead { text: "Hot Water" }
 
@@ -448,10 +451,10 @@ Item {
                     }
                 }
 
-                Item { Layout.preferredHeight: 10 }
+                Item { Layout.preferredHeight: 2 }
                 THead { text: "Hot Water Boost" }
                 RowLayout {
-                    Layout.alignment: Qt.AlignHCenter
+                    Layout.alignment: Qt.AlignLeft
                     spacing: 8
                     Label {
                         text: root.boostOn ? "Aan" : "Uit"
@@ -470,7 +473,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredWidth: 1
                 Layout.alignment: Qt.AlignTop
-                spacing: 4
+                spacing: 6
 
                 THead { text: "Energy Source" }
 
