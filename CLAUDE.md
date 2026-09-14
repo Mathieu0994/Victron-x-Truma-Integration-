@@ -116,7 +116,8 @@ Venus OS Large is the testbench for QML work.
   always takes the first adapter (the built-in chip). Patch and flow change
   prepared in `venus/patches/truma-inetx-adapter/`, not yet applied or tested;
   the stick is currently unplugged.
-- `dbus-truma-temp` still not run, so the Touch shows "—" for both temperatures.
+- `dbus-truma-temp` still not run; only needed if the two temperatures should
+  appear in VRM as sensors (the Touch reads the bridge's mirror paths since 14 Sep).
 - Heater interlock guaranteed by construction, not hardware-validated.
 - **Fault/error codes are not implemented** — the five polled topics don't
   carry them and the right topic is unknown. Needs a raw device-data dump
