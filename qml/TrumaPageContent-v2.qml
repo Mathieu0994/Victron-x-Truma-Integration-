@@ -48,8 +48,10 @@ Item {
     property bool ventOn: false
     property int fanLevel: 0
     property int energyMode: 0
-    property real roomTempC: -1
-    property real waterTempC: -1
+    // Bound directly to the items (not via onValueChanged): a value that is
+    // already there when the page opens must show up too.
+    readonly property real roomTempC: dbus.roomTemp.valid ? dbus.roomTemp.value : -1
+    readonly property real waterTempC: dbus.boilerTemp.valid ? dbus.boilerTemp.value : -1
 
     readonly property string roomTempText: root.roomTempC < 0 ? "—" : root.roomTempC.toFixed(1) + " °C"
     readonly property string waterTempText: root.waterTempC < 0 ? "—" : root.waterTempC.toFixed(1) + " °C"
@@ -94,14 +96,6 @@ Item {
     Connections {
         target: dbus.energyMode
         function onValueChanged() { if (dbus.energyMode.valid) root.energyMode = dbus.energyMode.value }
-    }
-    Connections {
-        target: dbus.roomTemp
-        function onValueChanged() { root.roomTempC = dbus.roomTemp.valid ? dbus.roomTemp.value : -1 }
-    }
-    Connections {
-        target: dbus.boilerTemp
-        function onValueChanged() { root.waterTempC = dbus.boilerTemp.valid ? dbus.boilerTemp.value : -1 }
     }
 
     // ---- Schrijven: lokaal altijd, D-Bus als die er is ------------------
