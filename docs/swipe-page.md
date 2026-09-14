@@ -1,5 +1,46 @@
 # Getting Truma into the main swipe view of the on-device gui-v2
 
+## 0. What Venus OS v3.79 actually does (Cerbo GX, 14 Sep 2026) — read this first
+
+Everything below §0 is the pre-deployment analysis. The facts, as found on the
+device:
+
+- gui-v2's QML **is** on the rootfs, but under
+  `/opt/victronenergy/gui-v2/Victron/VenusOS/` (`components/`, `pages/`, …),
+  not directly under `gui-v2/`. `SwipePageModel.qml` lives at
+  `…/Victron/VenusOS/components/SwipePageModel.qml`.
+- Editing it does **nothing** until the line `prefer :/qt/qml/Victron/VenusOS/`
+  is removed from `…/Victron/VenusOS/qmldir`: that line tells gui-v2 to use the
+  copy compiled into the binary. With the line gone, gui-v2 loads the module
+  from disk (the sources are identical, no speed penalty seen).
+- `SwipeViewPage` requires `navButtonText`, `navButtonIcon`, `url` and `view`
+  (not `iconSource`). The nav bar reads `navButtonText`/`navButtonIcon`.
+- The stock model uses `insert(index, page)` in `Component.onCompleted`, not a
+  `pages` list. `qml/SwipePageModel.v3.79.qml` is that stock file plus one
+  block that creates `TrumaPage.qml` by URL and inserts it before
+  Notifications. Icon: `qrc:/images/icon_temp_32.svg`.
+- Both rootfs edits (qmldir, SwipePageModel.qml) are lost on a firmware
+  update; `qml/install-swipe-page-on-cerbo.sh` re-applies them, keeps the
+  originals in `/data/truma/rootfs-backup/<firmware>/`, and has a `revert`.
+- The Venus OS *app* mechanism (`/data/apps`, `gui-v2-plugin-compiler.py`)
+  can only add pages under Settings → Integrations, the device list, or the
+  Quick Access pane on this version (`GuiPluginLoader::IntegrationType`;
+  `NavigationPage` is parsed but not rendered yet). It is not a swipe page
+  and the owner has ruled it out.
+- Uids: `com.victronenergy.settings/...` is rejected ("contains invalid part");
+  the page now takes `BackendConnection.serviceUidForType("settings")`, which
+  is `dbus/com.victronenergy.settings` on the Touch.
+
+Install (from the repo folder on the laptop; details in the script header):
+
+```sh
+scp -r qml root@<venus>:/data/truma-src/
+ssh root@<venus> "sh /data/truma-src/qml/install-swipe-page-on-cerbo.sh"
+```
+
+---
+
+
 Goal (product requirement 1): a **real top-level page** on the GX Touch 70,
 next to the stock ones:
 

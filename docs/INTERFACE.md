@@ -107,8 +107,8 @@ what the page does with it:
 
 | QML id | uid | Read (`onValueChanged`) | Write (`send(item, v)`) | Type/unit the QML assumes |
 |---|---|---|---|---|
-| `dbus.roomTemp` | `com.victronenergy.temperature.trumaroom/Temperature` | `root.roomTempC = valid ? value : -1`, shown `toFixed(1) + " °C"` | never | real, **whole °C** |
-| `dbus.boilerTemp` | `com.victronenergy.temperature.trumaboiler/Temperature` | same, as `waterTempC` | never | real, **whole °C** |
+| `dbus.roomTemp` | `…/Settings/Truma/RoomTemperature` (**since 14 Sep 2026**; was `com.victronenergy.temperature.trumaroom/Temperature`) | `root.roomTempC = valid ? value : -1`, shown `toFixed(1) + " °C"` | never | real, **whole °C** |
+| `dbus.boilerTemp` | `…/Settings/Truma/BoilerTemperature` (**since 14 Sep 2026**; was `…trumaboiler/Temperature`) | same, as `waterTempC` | never | real, **whole °C** |
 | `dbus.targetTemp` | `com.victronenergy.settings/Settings/Truma/TargetTemperature` | `root.tgtTemp = value` (int, when slider not pressed) | slider release: `send(dbus.targetTemp, root.tgtTemp)` | **whole °C**, slider 5..30 step 1 |
 | `dbus.fanLevel` | `com.victronenergy.settings/Settings/Truma/FanLevel` | `root.fanLevel = value` (when slider not pressed) | `setFan(level)`: writes RoomMode 5 (or 0) then FanLevel | int 0..10 |
 | `dbus.airMode` | `com.victronenergy.settings/Settings/Truma/AirMode` | `root.airMode = value` | Fast → 0, Comfort → 1 | int |
@@ -210,7 +210,15 @@ it the page shows "—" for the two temperatures and everything else works.
 
 ---
 
-## 7. Risk that could not be closed offline — VeQuickItem uid root
+## 7. VeQuickItem uid root — resolved on the Cerbo (v3.79, 14 Sep 2026)
+
+**Answer:** the `dbus/` root segment is real. With the bare service names the
+page showed "Geen verbinding met de Truma-bridge" although
+`/Settings/Truma/RoomMode GetValue` worked. `TrumaPageContent-v2.qml` now asks
+gui-v2 for the prefixed uids (`BackendConnection.serviceUidForType("settings")`
+and `serviceUidFromName("com.victronenergy.temperature.trumaroom", 0)`); the
+`/Settings/Truma/*` path names are unchanged. The original analysis follows.
+
 
 The QML binds `uid: "com.victronenergy.settings/Settings/Truma/…"`. In
 gui-v2's own pages a settings uid is normally built as
